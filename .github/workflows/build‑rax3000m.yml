@@ -2,12 +2,15 @@ name: Build RAX3000M‑NAND‑MTK mtd‑rw 6.6
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout my forked source (保留我所有修改)
-        uses: actions/checkout@v4
+      - name: Checkout source
+        uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
