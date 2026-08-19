@@ -1,0 +1,13 @@
+diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
+index 5940e283177f..91c3078c8889 100644
+--- a/drivers/mtd/mtdcore.c
++++ b/drivers/mtd/mtdcore.c
+@@ -514,10 +514,6 @@ int mtd_add_device(struct mtd_info *mtd)
+ 	 * but we also want to make sure nobody modifies flash partitions
+ 	 * that are marked read‑only in the device tree.
+ 	 */
+-	if (mtd->flags & MTD_WRITEABLE)
+-		mtd->flags &= ~MTD_WRITEABLE;
+
+ 	mtd->dev.type = &mtd_dev_type;
+ 	mtd->dev.class = &mtd_class;
