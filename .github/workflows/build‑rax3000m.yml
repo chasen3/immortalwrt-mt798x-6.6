@@ -1,4 +1,4 @@
-name: Build RAX3000M‑NAND‑MTK mtd‑rw‑patch 6.6
+name: Build RAX3000M‑NAND‑MTK mtdrw‑mod 6.6
 on:
   workflow_dispatch:
 
@@ -22,21 +22,22 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Generate config NAND‑MTK
+      - name: Generate config NAND‑MTK with kmod‑mtd‑rw
         run: |
           echo "CONFIG_TARGET_mediatek=y" > .config
           echo "CONFIG_TARGET_mediatek_filogic=y" >> .config
           echo "CONFIG_TARGET_mediatek_filogic_DEVICE_cmcc_rax3000m_nand_mtk=y" >> .config
+          echo "CONFIG_PACKAGE_kmod-mtd-rw=m" >> .config
           make defconfig
 
       - name: Download dl sources
         run: make download -j$(nproc)
 
-      - name: Compile firmware verbose log
-        run: make -j1 V=sc
+      - name: Compile firmware
+        run: make -j$(nproc)
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
-          name: RAX3000M-NAND-MTK-6.6-unlock
+          name: RAX3000M-NAND-MTK-kmod-mtdrw
           path: bin/targets/mediatek/filogic/*.bin
