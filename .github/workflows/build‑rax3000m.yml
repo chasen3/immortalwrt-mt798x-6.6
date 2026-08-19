@@ -1,43 +1,43 @@
-name: Build RAX3000M‑NAND mtd‑rw 6.6
+name: Build RAX3000M‑NAND‑MTK mtd‑rw 6.6
 on:
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu‑22.04
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout source
-        uses: actions/checkout@main
+      - name: Checkout my forked source (保留我所有修改)
+        uses: actions/checkout@v4
 
-      - name: Install compile dependencies
+      - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y build-essential ccache ecj fastjar file g++ gawk gettext git libelf-dev libncurses5-dev libncursesw5-dev libssl-dev python3 python3-setuptools python3-yaml unzip wget zlib1g-dev flex bison libtool rsync
 
-      - name: Pull mtd‑rw user‑space package
+      - name: Get mtd-rw package
         run: git clone https://github.com/robimarko/openwrt-mtd-rw.git package/mtd-rw
 
-      - name: Update & install feeds
+      - name: Feeds update install
         run: |
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Generate config for CMCC‑RAX3000M NAND
+      - name: Generate config NAND‑MTK
         run: |
           echo "CONFIG_TARGET_mediatek=y" > .config
           echo "CONFIG_TARGET_mediatek_filogic=y" >> .config
-          echo "CONFIG_TARGET_mediatek_filogic_DEVICE_cmcc_rax3000m=y" >> .config
+          echo "CONFIG_TARGET_mediatek_filogic_DEVICE_cmcc_rax3000m_nand_mtk=y" >> .config
           echo "CONFIG_PACKAGE_mtd-rw=y" >> .config
           make defconfig
 
-      - name: Download source code
+      - name: Download dl sources
         run: make download -j$(nproc)
 
-      - name: Start compile firmware
+      - name: Compile firmware
         run: make -j$(nproc)
 
-      - name: Upload firmware artifact
+      - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
-          name: RAX3000M‑NAND‑6.6‑mtdrw‑firmware
+          name: RAX3000M-NAND-MTK-6.6-mtdrw
           path: bin/targets/mediatek/filogic/*.bin
