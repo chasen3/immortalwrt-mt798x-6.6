@@ -15,10 +15,15 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential ccache ecj fastjar file g++ gawk gettext git libelf-dev libncurses5-dev libncursesw5-dev libssl-dev python3 python3-setuptools python3-yaml unzip wget zlib1g-dev flex bison libtool rsync
+          sudo apt install -y build-essential ccache ecj fastjar file g++ gawk gettext git unzip libelf-dev libncurses5-dev libncursesw5-dev libssl-dev python3 python3-setuptools python3-yaml unzip wget zlib1g-dev flex bison libtool rsync
 
-      - name: Get mtd-rw package
-        run: git clone https://github.com/robimarko/openwrt-mtd-rw.git package/mtd-rw
+      - name: Download kmod-mtd-rw source (curl zip, avoid git clone auth error)
+        run: |
+          mkdir -p package/kmod-mtd-rw
+          curl -L https://github.com/robimarko/openwrt-mtd-rw/archive/refs/heads/master.zip -o mtdrw.zip
+          unzip -q mtdrw.zip
+          cp -r openwrt-mtd-rw-master/* package/kmod-mtd-rw/
+          rm -rf openwrt-mtd-rw-master mtdrw.zip
 
       - name: Feeds update install
         run: |
@@ -30,7 +35,7 @@ jobs:
           echo "CONFIG_TARGET_mediatek=y" > .config
           echo "CONFIG_TARGET_mediatek_filogic=y" >> .config
           echo "CONFIG_TARGET_mediatek_filogic_DEVICE_cmcc_rax3000m_nand_mtk=y" >> .config
-          echo "CONFIG_PACKAGE_mtd-rw=y" >> .config
+          echo "CONFIG_PACKAGE_kmod-mtd-rw=y" >> .config
           make defconfig
 
       - name: Download dl sources
